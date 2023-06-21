@@ -29,10 +29,12 @@ class Firebase():
     def send2firebase(self, col_name, doc_name, data_arr):
         print(col_name)
         print(doc_name)
-        ref = self.db.collection(col_name).document(doc_name).collection("questions")
+        ref = self.db.collection(col_name).document(doc_name)
+        ref.set({})
+        reff = ref.collection("questions")
         for data in data_arr:
             
-            doc_ref = ref.document(data.number)
+            doc_ref = reff.document(data.number)
             doc_ref.set({"question":data.question,"image":data.q_image_url,"options":data.options,"optionImage":data.opt_image_url,"answer":data.answer,"descriptipn":data.description })
         self.delete_files_in_folder()
         python = sys.executable
