@@ -125,12 +125,15 @@ class RightLayout(QtWidgets.QVBoxLayout):
     def get_option(self, text):
             subs = ['A)', 'B)', 'C)', 'D)']
             options = []
-            for i in range(len(subs)-1):
-                start_index = text.index(subs[i])
-                end_index = text.index(subs[i+1])
-                options.append(text[start_index:end_index].strip().replace(subs[i],'').strip())
-            start_index = text.index('D)')
-            options.append(text[start_index:].strip().replace('D)','').strip())
+            try:
+                for i in range(len(subs)-1):
+                    start_index = text.index(subs[i])
+                    end_index = text.index(subs[i+1])
+                    options.append(text[start_index:end_index].strip().replace(subs[i],'').strip())
+                start_index = text.index('D)')
+                options.append(text[start_index:].strip().replace('D)','').strip())
+            except:
+                options = ['','','','']
             return options
     
     def pix2np(self,pix):

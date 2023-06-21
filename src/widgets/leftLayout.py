@@ -8,6 +8,7 @@ class LeftLayout(QtWidgets.QVBoxLayout):
         super().__init__()
 
         self.exam_name = exam_name
+        self.exam_type = exam_type
         self.manager = manager
         self.firebase = manager.firebase
         
@@ -39,10 +40,10 @@ class LeftLayout(QtWidgets.QVBoxLayout):
         self.questionInput = QtWidgets.QPlainTextEdit()
         imageButton = QtWidgets.QPushButton("Add image")
 
-        imageArea = QtWidgets.QHBoxLayout()
-        addImageArea.addLayout(imageArea)
+        self.imageArea = QtWidgets.QHBoxLayout()
+        addImageArea.addLayout(self.imageArea)
 
-        imageButton.clicked.connect(lambda: self.createImageArea(imageArea))
+        imageButton.clicked.connect(lambda: self.createImageArea(self.imageArea))
 
         self.imageInputLabel = QtWidgets.QLabel("Image url:")
         self.imageUrlLabel = QtWidgets.QLineEdit()
@@ -54,6 +55,11 @@ class LeftLayout(QtWidgets.QVBoxLayout):
         addImageArea.addWidget(questionLabel)
         addImageArea.addWidget(imageButton)
         questionArea.addWidget(self.questionInput)
+
+        self.imageArea.addWidget(self.imageInputLabel)
+        self.imageArea.addWidget(self.imageUrlLabel)
+        self.imageInputLabel.hide()
+        self.imageUrlLabel.hide()
     
         # get options
         optionsArea = QtWidgets.QHBoxLayout()
@@ -61,7 +67,7 @@ class LeftLayout(QtWidgets.QVBoxLayout):
         self.addLayout(optionsArea)
 
         optionsRight = QtWidgets.QVBoxLayout()
-        optionsLeft = QtWidgets.QVBoxLayout()
+        self.optionsLeft = QtWidgets.QVBoxLayout()
 
         self.optImageArea = QtWidgets.QHBoxLayout()
 
@@ -71,10 +77,10 @@ class LeftLayout(QtWidgets.QVBoxLayout):
         optionsLabel = QtWidgets.QLabel("Options")
         optionButtonLabel = QtWidgets.QPushButton("Add image")
 
-        optionsLeft.addWidget(optionsLabel)
-        optionsLeft.addLayout(self.optImageArea)
-        optionsLeft.addWidget(optionButtonLabel)
-        optionsArea.addLayout(optionsLeft)
+        self.optionsLeft.addWidget(optionsLabel)
+        self.optionsLeft.addLayout(self.optImageArea)
+        self.optionsLeft.addWidget(optionButtonLabel)
+        optionsArea.addLayout(self.optionsLeft)
         optionsArea.addLayout(optionsRight)
 
         optionAArea = QtWidgets.QHBoxLayout()
@@ -118,8 +124,11 @@ class LeftLayout(QtWidgets.QVBoxLayout):
 
         self.lineArrays = [optionsAInput, optionsBInput, optionsCInput, optionsDInput]
 
-        optionButtonLabel.clicked.connect(lambda: self.createImageArea(optionsLeft, options=self.lineArrays))
-        
+        optionButtonLabel.clicked.connect(lambda: self.createImageArea(self.optImageArea, options=self.lineArrays))
+        self.optImageArea.addWidget(self.optImageInputLabel)
+        self.optImageArea.addWidget(self.optImageUrlLabel)
+        self.optImageInputLabel.hide()
+        self.optImageUrlLabel.hide()
 
         # get answer
         answerArea = QtWidgets.QHBoxLayout()
@@ -196,6 +205,7 @@ class LeftLayout(QtWidgets.QVBoxLayout):
         self.question_number += 1
         self.questionNumberInput.setText(str(self.question_number))
         self.answerInput.setText(self.answers[str(self.question_number)])
+        self.cleanInputs()
     
     def cleanInputs(self):
         self.questionInput.setPlainText('')
@@ -206,6 +216,7 @@ class LeftLayout(QtWidgets.QVBoxLayout):
         self.lineArrays[3].setText('')
         self.optImageUrlLabel.setText('')
         self.descriptionInput.setPlainText('')
+        self.removePressed()
 
     
     def uploadFirebaseImage(self,options=None):
@@ -227,31 +238,39 @@ class LeftLayout(QtWidgets.QVBoxLayout):
     def createImageArea(self, parent, options=None):
         url = self.uploadFirebaseImage(options)
 
+
         if options:
+            self.optImageInputLabel.show()
+            self.optImageUrlLabel.show()
             options[0].setText('A')
             options[1].setText('B')
             options[2].setText('C')
             options[3].setText('D')
             self.optImageUrlLabel.setText(url)
-            parent.addWidget(self.optImageInputLabel)
-            parent.addWidget(self.optImageUrlLabel)
         else:
+            self.imageInputLabel.show()
+            self.imageUrlLabel.show()
             self.imageUrlLabel.setText(url)
-            parent.addWidget(self.imageInputLabel)
-            parent.addWidget(self.imageUrlLabel)
+            
 
 
     
-    def removePressed(self, area, options=None):
-        while area.count():
-            item = area.takeAt(0)
-            widget = item.widget()
-            if widget:
-                widget.deleteLater()
-        self.update()
+    def removePressed(self):
+        self.imageUrlLabel.setText('')
+        self.optImageUrlLabel.setText('')
+        self.imageInputLabel.hide()
+        self.imageUrlLabel.hide()
+        self.optImageInputLabel.hide()
+        self.optImageUrlLabel.hide()
+        # while area.count():
+        #     item = area.takeAt(0)
+        #     widget = item.widget()
+        #     if widget:
+        #         widget.deleteLater()
+        # self.update()
 
-        if options:
-            options[0].setText('')
-            options[1].setText('')
-            options[2].setText('')
-            options[3].setText('')
+        # if options:
+        #     options[0].setText('')
+        #     options[1].setText('')
+        #     options[2].setText('')
+        #     options[3].setText('')
